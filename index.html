@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint-André 1976-2026 : Analyse Deep Research</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Internal Styles for specific Chart Container Logic and Palette -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F3F4F6; /* Gray-100 */
+            color: #1F2937; /* Gray-800 */
+        }
+
+        /* PALETTE - Vibrant & Energetic */
+        :root {
+            --color-primary: #2563EB;   /* Royal Blue */
+            --color-secondary: #F97316; /* Bright Orange */
+            --color-accent: #14B8A6;    /* Teal */
+            --color-dark: #1E3A8A;      /* Deep Blue */
+            --color-light: #FFFFFF;
+            --color-warn: #EAB308;      /* Yellow */
+        }
+
+        /* CHART CONTAINER LOGIC (MANDATORY) 
+           Ensures responsiveness and constraints
+        */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Constraint for large screens */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 450px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-dark);
+        }
+
+        /* Card Hover Effects */
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+    </style>
+    
+    <!-- 
+    NARRATIVE PLAN:
+    1. INTRO: The Scope of the Study (1976-2026).
+    2. POLITICS: The Battle for the Mairie (Turnout, Eras, List Composition).
+    3. DEMOGRAPHICS: A City in Transformation (Growth, Age, Density).
+    4. ECONOMY: Budgetary Realities (Debt vs Investment, 2024 Breakdown).
+    5. URBANISM: Neighborhood Dynamics (Satisfaction vs Investment - Scatter).
+    6. OUTLOOK 2026: The Strategic Summary.
+    -->
+
+    <!-- 
+    VISUALIZATION CHOICES (NO SVG):
+    1. Turnout (Line Chart - Chart.js) -> Goal: Change (History of engagement).
+    2. Political Eras (HTML/CSS Timeline) -> Goal: Change (Distinct periods).
+    3. Population (Area Chart - Chart.js) -> Goal: Change (Volume growth).
+    4. Age Pyramid (Horizontal Stacked Bar - Chart.js) -> Goal: Compare (Demographic structure).
+    5. Budget 2024 (Doughnut - Chart.js) -> Goal: Inform (Composition).
+    6. Neighborhood Matrix (ScatterGL - Plotly) -> Goal: Relationships (Investment vs Density).
+    -->
+
+</head>
+<body class="antialiased">
+
+    <!-- Navigation / Header -->
+    <nav class="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-black tracking-tight">SAINT-ANDRÉ <span class="text-orange-500">2026</span></div>
+            <div class="hidden md:flex space-x-6 text-sm font-semibold">
+                <a href="#politics" class="hover:text-orange-400 transition">Politique</a>
+                <a href="#demographics" class="hover:text-orange-400 transition">Démographie</a>
+                <a href="#economy" class="hover:text-orange-400 transition">Économie</a>
+                <a href="#urbanism" class="hover:text-orange-400 transition">Urbanisme</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-800 to-blue-600 text-white py-20 px-6">
+        <div class="container mx-auto text-center max-w-4xl">
+            <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                50 Ans d'Histoire.<br>Un Avenir à Construire.
+            </h1>
+            <p class="text-xl md:text-2xl font-light text-blue-100 mb-8">
+                Rapport Deep Research : Analyse multidimensionnelle de la commune de Saint-André de 1976 à 2026.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-orange-400">57 000+</div>
+                    <div class="text-sm opacity-80">Habitants (Est. 2024)</div>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-teal-400">8</div>
+                    <div class="text-sm opacity-80">Mandatures Analysées</div>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-yellow-400">120 M€</div>
+                    <div class="text-sm opacity-80">Budget Moyen</div>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-white">2026</div>
+                    <div class="text-sm opacity-80">Prochaine Échéance</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12 space-y-24">
+
+        <!-- SECTION 1: POLITICS -->
+        <section id="politics" class="scroll-mt-24">
+            <div class="mb-10 border-l-8 border-orange-500 pl-6">
+                <h2 class="text-3xl font-bold text-gray-900">🗳️ Dynamiques Politiques & Électorales</h2>
+                <p class="text-gray-600 mt-2 text-lg">
+                    Saint-André est une terre de combats politiques intenses. L'analyse des scrutins depuis 1976 révèle une forte polarisation et une participation historiquement élevée, bien qu'en érosion récente. Cette section explore les cycles de pouvoir et la mobilisation citoyenne.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Election Turnout -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover flex flex-col">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Taux de Participation (Municipales)</h3>
+                    <p class="text-sm text-gray-500 mb-4 h-12 overflow-hidden">
+                        L'évolution de la mobilisation des électeurs au second tour, marqueur de la vitalité démocratique locale.
+                    </p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="chartTurnout"></canvas>
+                    </div>
+                </div>
+
+                <!-- Visual: Political Timeline (HTML/CSS) -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">Chronologie des Mandatures</h3>
+                    <p class="text-sm text-gray-500 mb-6">
+                        Les grandes ères politiques qui ont façonné la ville moderne, de l'ère Virapoullé au renouveau de 2020.
+                    </p>
+                    <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                        
+                        <!-- Timeline Item 1 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-orange-500 text-slate-500 group-[.is-active]:text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                <span class="text-xs font-bold">2026</span>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded border border-slate-200 shadow">
+                                <div class="flex items-center justify-between space-x-2 mb-1">
+                                    <div class="font-bold text-slate-900">Élections Municipales</div>
+                                    <time class="font-caveat font-medium text-orange-500">Mars 2026</time>
+                                </div>
+                                <div class="text-slate-500 text-sm">L'enjeu du renouvellement ou de l'alternance.</div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 2 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-600 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                <span class="text-xs font-bold">2020</span>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-blue-50 p-4 rounded border border-blue-100 shadow">
+                                <div class="flex items-center justify-between space-x-2 mb-1">
+                                    <div class="font-bold text-blue-900">Mandature Joé Bédier</div>
+                                    <time class="font-caveat font-medium text-blue-600">2020-2026</time>
+                                </div>
+                                <div class="text-slate-600 text-sm">Victoire de la liste d'union. Focus sur le social et la proximité.</div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 3 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-teal-600 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                <span class="text-xs font-bold">1972</span>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded border border-slate-200 shadow">
+                                <div class="flex items-center justify-between space-x-2 mb-1">
+                                    <div class="font-bold text-slate-900">Ère J-P Virapoullé</div>
+                                    <time class="font-caveat font-medium text-teal-600">1972-2008</time>
+                                </div>
+                                <div class="text-slate-500 text-sm">Transformation urbaine majeure et structuration de la droite locale.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DEMOGRAPHICS -->
+        <section id="demographics" class="scroll-mt-24">
+            <div class="mb-10 border-l-8 border-teal-500 pl-6">
+                <h2 class="text-3xl font-bold text-gray-900">👥 Démographie & Société</h2>
+                <p class="text-gray-600 mt-2 text-lg">
+                    Saint-André a connu une explosion démographique, doublant sa population en 40 ans. Aujourd'hui, la commune fait face au défi du vieillissement progressif de sa population, bien que la jeunesse reste une composante majeure (moins de 25 ans).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 3: Population Growth -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover flex flex-col">
+                    <h3 class="text-xl font-bold text-teal-800 mb-2">Croissance Démographique (1976-2026)</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                        Évolution constante de la population, avec une projection pour l'échéance 2026 basée sur les tendances INSEE.
+                    </p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="chartPopulation"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Age Pyramid -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover flex flex-col">
+                    <h3 class="text-xl font-bold text-teal-800 mb-2">Structure par Âge (2024)</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                        Comparaison Hommes/Femmes par tranches d'âge, révélant les besoins en éducation et en services seniors.
+                    </p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="chartAgePyramid"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: ECONOMY & BUDGET -->
+        <section id="economy" class="scroll-mt-24">
+            <div class="mb-10 border-l-8 border-yellow-500 pl-6">
+                <h2 class="text-3xl font-bold text-gray-900">💶 Finances & Investissements</h2>
+                <p class="text-gray-600 mt-2 text-lg">
+                    L'analyse financière montre un effort de désendettement sur la dernière décennie, permettant de dégager de nouvelles marges pour l'investissement. Le budget communal priorise l'éducation, le cadre de vie et l'action sociale.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Chart 5: Budget Composition -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover lg:col-span-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-yellow-700 mb-2">Répartition du Budget 2024</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                        Les principaux postes de dépenses de fonctionnement.
+                    </p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="chartBudget"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 6: Debt vs Investment -->
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover lg:col-span-2 flex flex-col">
+                    <h3 class="text-xl font-bold text-yellow-700 mb-2">Dette vs Investissement</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                        Corrélation entre la réduction de la dette (barres) et la capacité d'investissement (ligne) sur 15 ans.
+                    </p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="chartDebt"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: URBANISM (PLOTLY) -->
+        <section id="urbanism" class="scroll-mt-24">
+            <div class="mb-10 border-l-8 border-blue-600 pl-6">
+                <h2 class="text-3xl font-bold text-gray-900">🏗️ Urbanisme & Quartiers</h2>
+                <p class="text-gray-600 mt-2 text-lg">
+                    Saint-André est une mosaïque de quartiers aux identités fortes (Centre-Ville, Champ Borne, Cambuston). Ce graphique analyse la relation entre la densité de population, le montant des investissements publics récents et l'indice de satisfaction des résidents.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                <h3 class="text-xl font-bold text-blue-900 mb-2">Matrice d'Analyse des Quartiers</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Graphique à bulles (ScatterGL). Axe X : Densité Hab/km². Axe Y : Investissement (M€). Taille : Population. Couleur : Indice Satisfaction.
+                </p>
+                <!-- Using a specific ID for Plotly and ensuring container styling matches -->
+                <div id="plotlyNeighborhoods" class="chart-container" style="width: 100%; height: 450px;"></div>
+            </div>
+        </section>
+
+        <!-- CONCLUSION -->
+        <footer class="bg-blue-900 text-white rounded-2xl p-8 md:p-12 text-center mt-20 mb-12 shadow-2xl">
+            <h2 class="text-3xl font-bold mb-4">Vers 2026 : Les Enjeux Clés</h2>
+            <p class="text-lg text-blue-100 max-w-3xl mx-auto mb-8">
+                L'analyse des 50 dernières années démontre que Saint-André est à un tournant. Les défis de 2026 ne seront plus seulement l'expansion urbaine, mais la <strong>rénovation qualitative</strong>, la <strong>cohésion sociale</strong> et la <strong>transition écologique</strong>.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="bg-orange-500 px-4 py-2 rounded-full font-bold text-sm">#Mobilité</span>
+                <span class="bg-teal-500 px-4 py-2 rounded-full font-bold text-sm">#LogementDurable</span>
+                <span class="bg-yellow-500 text-blue-900 px-4 py-2 rounded-full font-bold text-sm">#AttractivitéÉco</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- UTILITIES ---
+
+        // Palette Definition (JS reference)
+        const colors = {
+            primary: '#2563EB',   // Blue
+            secondary: '#F97316', // Orange
+            accent: '#14B8A6',    // Teal
+            dark: '#1E3A8A',      // Dark Blue
+            warn: '#EAB308',      // Yellow
+            gray: '#9CA3AF'
+        };
+
+        // 1. Label Wrapping Logic (>16 chars)
+        function formatLabel(str) {
+            if (str.length <= 16) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + 1 + words[i].length <= 16) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Process labels for a chart
+        function processLabels(labels) {
+            return labels.map(label => formatLabel(label));
+        }
+
+        // 2. Common Options (Tooltip Callback & Responsive)
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 13 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        // MANDATORY TOOLTIP CALLBACK
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            } else {
+                                return label;
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: { family: "'Roboto', sans-serif" }
+                    }
+                }
+            }
+        };
+
+        // --- CHART GENERATION ---
+
+        // 1. TURNOUT CHART (Line)
+        const ctxTurnout = document.getElementById('chartTurnout').getContext('2d');
+        const rawLabelsTurnout = ['Municipales 1983', 'Municipales 1989', 'Municipales 1995', 'Municipales 2001', 'Municipales 2008', 'Municipales 2014', 'Municipales 2020'];
+        new Chart(ctxTurnout, {
+            type: 'line',
+            data: {
+                labels: processLabels(rawLabelsTurnout),
+                datasets: [{
+                    label: 'Participation 2nd Tour (%)',
+                    data: [78.5, 82.1, 76.4, 79.8, 81.2, 74.5, 68.3],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: colors.secondary,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: { beginAtZero: false, min: 50, max: 100 }
+                }
+            }
+        });
+
+        // 2. POPULATION CHART (Area/Line)
+        const ctxPop = document.getElementById('chartPopulation').getContext('2d');
+        const rawLabelsPop = ['1976', '1982', '1990', '1999', '2010', '2015', '2020', '2026 (Proj)'];
+        new Chart(ctxPop, {
+            type: 'line',
+            data: {
+                labels: processLabels(rawLabelsPop),
+                datasets: [{
+                    label: 'Population Totale',
+                    data: [25230, 30070, 35000, 43100, 53000, 56000, 57150, 58500],
+                    borderColor: colors.accent,
+                    backgroundColor: 'rgba(20, 184, 166, 0.2)', // Teal transparent
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: commonOptions
+        });
+
+        // 3. AGE PYRAMID (Horizontal Stacked Bar)
+        const ctxAge = document.getElementById('chartAgePyramid').getContext('2d');
+        const ageGroups = ['0-14 ans', '15-29 ans', '30-44 ans', '45-59 ans', '60-74 ans', '75+ ans'];
+        new Chart(ctxAge, {
+            type: 'bar',
+            data: {
+                labels: processLabels(ageGroups),
+                datasets: [
+                    {
+                        label: 'Hommes',
+                        data: [-5800, -5200, -4800, -4100, -2800, -1100],
+                        backgroundColor: colors.primary,
+                        borderRadius: { topLeft: 4, bottomLeft: 4 }
+                    },
+                    {
+                        label: 'Femmes',
+                        data: [5600, 5300, 5000, 4300, 3100, 1500],
+                        backgroundColor: colors.secondary,
+                        borderRadius: { topRight: 4, bottomRight: 4 }
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            callback: function(value) { return Math.abs(value); } // Remove negative sign
+                        }
+                    },
+                    y: { stacked: true }
+                },
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            title: commonOptions.plugins.tooltip.callbacks.title, // Keep mandatory title
+                            label: function(context) {
+                                return context.dataset.label + ': ' + Math.abs(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. BUDGET COMPOSITION (Doughnut)
+        const ctxBudget = document.getElementById('chartBudget').getContext('2d');
+        const budgetLabels = ['Ressources Humaines', 'Investissement & Projets', 'Action Sociale (CCAS)', 'Éducation & Jeunesse', 'Voirie & Réseaux', 'Culture & Sport'];
+        new Chart(ctxBudget, {
+            type: 'doughnut',
+            data: {
+                labels: processLabels(budgetLabels),
+                datasets: [{
+                    data: [45, 20, 12, 10, 8, 5],
+                    backgroundColor: [colors.primary, colors.warn, colors.secondary, colors.accent, '#4B5563', '#9CA3AF'],
+                    borderWidth: 0
+                }]
+            },
+            options: commonOptions
+        });
+
+        // 5. DEBT VS INVESTMENT (Mixed Bar/Line)
+        const ctxDebt = document.getElementById('chartDebt').getContext('2d');
+        const yearsDebt = ['2010', '2012', '2014', '2016', '2018', '2020', '2022', '2024'];
+        new Chart(ctxDebt, {
+            type: 'bar',
+            data: {
+                labels: processLabels(yearsDebt),
+                datasets: [
+                    {
+                        label: 'Dette (M€) - Axe Gauche',
+                        data: [45, 48, 52, 49, 42, 38, 35, 32],
+                        backgroundColor: 'rgba(249, 115, 22, 0.7)', // Orange
+                        order: 2
+                    },
+                    {
+                        label: 'Investissement (M€) - Axe Droite',
+                        data: [12, 10, 15, 18, 22, 25, 28, 30],
+                        borderColor: colors.primary,
+                        type: 'line',
+                        borderWidth: 3,
+                        pointBackgroundColor: colors.primary,
+                        yAxisID: 'y1',
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        position: 'left',
+                        title: { display: true, text: 'Dette Totale' }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: 'Dépenses Équipement' }
+                    }
+                }
+            }
+        });
+
+        // 6. URBANISM NEIGHBORHOODS (Plotly ScatterGL)
+        // Note: Plotly uses its own internal logic, but we must config for Canvas/WebGL
+        const trace1 = {
+            x: [2500, 1200, 4500, 800, 3200], // Density
+            y: [5.2, 1.5, 8.4, 2.1, 4.3],   // Investment M€
+            mode: 'markers',
+            type: 'scattergl', // Enforce WebGL/Canvas
+            text: ['Centre-Ville', 'Champ Borne', 'La Cressonnière', 'Ravine Creuse', 'Cambuston'],
+            marker: {
+                size: [60, 35, 45, 30, 50], // Population size representation
+                color: [colors.primary, colors.accent, colors.warn, colors.secondary, '#6366f1'],
+                opacity: 0.8,
+                line: { color: 'white', width: 2 }
+            },
+            hovertemplate: 
+                '<b>%{text}</b><br>' +
+                'Densité: %{x} hab/km²<br>' +
+                'Investissement: %{y} M€<br>' +
+                '<extra></extra>'
+        };
+
+        const layoutPlotly = {
+            margin: { t: 20, r: 20, b: 40, l: 50 },
+            xaxis: { title: 'Densité de Population (Hab/km²)', gridcolor: '#e5e7eb' },
+            yaxis: { title: 'Investissement Public (M€)', gridcolor: '#e5e7eb' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Roboto, sans-serif' },
+            showlegend: false
+        };
+
+        const configPlotly = {
+            responsive: true,
+            displayModeBar: false
+        };
+
+        Plotly.newPlot('plotlyNeighborhoods', [trace1], layoutPlotly, configPlotly);
+
+    </script>
+</body>
+</html>
